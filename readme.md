@@ -3,14 +3,17 @@
 ## Instrucciones
 
 ##### Habilitar entorno virtual para terminal
-Windows: `.\venv\Scripts\activate`
-* Si la terminal no permite ejecutar script:
-
-`Set-ExecutionPolicy RemoteSigned -Scope Process`
-
+Windows:
 `.\venv\Scripts\activate`
 
-Mac: `source venv/bin/activate`
+_*Si la terminal no permite ejecutar script:_
+```
+Set-ExecutionPolicy RemoteSigned -Scope Process
+.\venv\Scripts\activate
+```
+
+Mac:
+`source venv/bin/activate`
 
 ##### Instalar librerias necesarias
 `pip install -r requirements.txt`
@@ -24,7 +27,7 @@ Usar VSCode Thunder Client Extension o Navegador a "http://localhost:8000/api/ta
 
 ### Visualizar todas las tareas en la Base de datos
 GET a http://localhost:8000/api/tasks
-```
+```json
 {
   "id": 1,
   "title": "Programar",
@@ -36,7 +39,7 @@ GET a http://localhost:8000/api/tasks
 
 ### Crear tarea en la Base de datos
 POST a http://localhost:8000/api/tasks
-```
+```json
 {
   "title": "Nombre de Tarea",
   "description": "Descripción de Tarea"
@@ -45,12 +48,14 @@ POST a http://localhost:8000/api/tasks
 
 ### Visualizar tarea especifica en la Base de datos
 GET a http://localhost:8000/api/tasks/{task_id}
+
 *Reemplazar {task_id} con el id de la tarea principal
 
 ### Actualizar tarea especifica en la Base de datos
 PUT a http://localhost:8000/api/tasks/{task_id}
+
 *Reemplazar {task_id} con el id de la tarea principal
-```
+```json
 {
   "title": "Actualizar",
   "description": "Actualizar",
@@ -60,16 +65,19 @@ PUT a http://localhost:8000/api/tasks/{task_id}
 
 ### Eliminar tarea especifica en la Base de datos
 DELETE a http://localhost:8000/api/tasks/{task_id}
+
 *Reemplazar {task_id} con el id de la tarea principal
 
 ### Visualizar todas las subtareas de tarea princial en la Base de datos
 GET a http://localhost:8000/api/tasks/{task_id}/subtask
+
 *Reemplazar {task_id} con el id de la tarea principal
 
 ### Crear subtarea para tarea princial en la Base de datos
 POST a http://localhost:8000/api/tasks/{task_id}/subtask
+
 *Reemplazar {task_id} con el id de la tarea principal
-```
+```json
 {
   "title": "Nombre de Subtarea"
 }
@@ -77,14 +85,18 @@ POST a http://localhost:8000/api/tasks/{task_id}/subtask
 
 ### Visualizar subtarea especifica de tarea princial en la Base de datos
 GET a http://localhost:8000/api/tasks/{task_id}/subtask/{subtask_id}
+
 *Reemplazar {task_id} con el id de la tarea principal
+
 *Reemplazar {subtask_id} con el id de la sub tarea perteneciente a la tarea principal
 
 ### Actualizar subtarea especifica en la Base de datos
 PUT a http://localhost:8000/api/tasks/{task_id}/subtask/{subtask_id}
+
 *Reemplazar {task_id} con el id de la tarea principal
+
 *Reemplazar {subtask_id} con el id de la sub tarea perteneciente a la tarea principal
-```
+```json
 {
   "is_complete": true
 }
@@ -92,5 +104,7 @@ PUT a http://localhost:8000/api/tasks/{task_id}/subtask/{subtask_id}
 
 ### Eliminar subtarea especifica en la Base de datos
 DELETE a http://localhost:8000/api/tasks/{task_id}/subtask/{subtask_id}
+
 *Reemplazar {task_id} con el id de la tarea principal
+
 *Reemplazar {subtask_id} con el id de la sub tarea perteneciente a la tarea principal

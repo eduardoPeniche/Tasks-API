@@ -7,46 +7,47 @@ from .models import Task, SubTask
 from .serializers import TaskSerializer, SubTaskSerializer
 
 # Create your views here.
-class TaskListAPIView(APIView): # Access with http://localhost:8000/api/tasks
-    def get(self, request): # GET request will return a list of all tasks in the db
+class TaskListAPIView(APIView):
+    """
+    Access with http://URL_BASE/api/tasks
+
+    GET request will return a list of all tasks in the db
+    POST request will create an entry in the db and return the entry just created
+    """
+    def get(self, request): 
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
     
-    def post(self, request): # POST request will create an entry in the db and return the entry just created
+    def post(self, request):
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # def post(self, request):
-    #     request_data = request.data
-    #     if request_data:
-    #         title = request.data['title']
-    #         description = request.data['description']
-    #         task_created = Task.objects.create(title=title, description=description)
-    #         response = {'status': 'Success', 'message': 'Task created successfully'}
-    #         return Response(response)
-    #     else:
-    #         return Response({'status': 'ERROR','message': 'Did not provide title and description'}, status=status.HTTP_400_BAD_REQUEST)
+class TaskDetailAPIView(APIView):
+    """
+    Access with "http://URL_BASE/api/tasks/{task_id}"
 
-class TaskDetailAPIView(APIView): # Access with "http://localhost:8000/api/tasks/{task_id}"
-
+    GET request will return the specific task in the db
+    PUT request will update the specific task
+    DELETE request will delete the specific task
+    """
     def get_task(self, pk):
         try:
             return Task.objects.get(pk=pk)
         except Task.DoesNotExist:
             return None
 
-    def get(self, request, pk): # GET request will return the specific task in the db
+    def get(self, request, pk): 
         task = self.get_task(pk)
         if task:
             serializer = TaskSerializer(task)
             return Response(serializer.data)
         return Response({'message': 'Task {pk} not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    def put(self, request, pk): # PUT request will update the specific task
+    def put(self, request, pk):
         task = self.get_task(pk)
 
         if not task:
@@ -57,18 +58,8 @@ class TaskDetailAPIView(APIView): # Access with "http://localhost:8000/api/tasks
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    # def put(self, request, pk):
-    #     task = self.get_task(pk)
-    #     if task:
-    #         serializer = TaskSerializer(task, data=request.data)
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #             return Response(serializer.data)
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #     return Response({'message': f'Task {pk} not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    def delete(self, request, pk): # DELETE request will delete the specific task
+    def delete(self, request, pk): 
         task = self.get_task(pk)
 
         if not task:
@@ -77,15 +68,20 @@ class TaskDetailAPIView(APIView): # Access with "http://localhost:8000/api/tasks
         task.delete()
         return Response({'message': f'Task {pk} deleted'}, status=status.HTTP_204_NO_CONTENT)
     
-class TaskSubtaskAPIView(APIView): #Access with "http://localhost:8000/api/tasks/{task_id}/subtask"
-    
+class TaskSubtaskAPIView(APIView):
+    """
+    Access with "http://URL_BASE/api/tasks/{task_id}/subtask"
+
+    GET request will return all subtasks related to the main task
+    POST request will create a subtask for the main task
+    """
     def get_subtask(self, pk):
         try:
             return SubTask.objects.filter(main_task_id=pk)
         except SubTask.DoesNotExist:
             return None
         
-    def get(self, request, pk): # GET request will return all subtasks related to the main task
+    def get(self, request, pk): 
         try:
             task = Task.objects.get(pk=pk) # Try to find the task
             subtasks = self.get_subtask(pk)
@@ -102,7 +98,7 @@ class TaskSubtaskAPIView(APIView): #Access with "http://localhost:8000/api/tasks
         except Task.DoesNotExist:
             return Response({'message': f'Task with id {pk} not found'}, status=status.HTTP_404_NOT_FOUND)
         
-    def post(self, request, pk): # POST request will create a subtask for the main task
+    def post(self, request, pk): 
         try:
             task = Task.objects.get(pk=pk)
         except Task.DoesNotExist:
@@ -116,15 +112,21 @@ class TaskSubtaskAPIView(APIView): #Access with "http://localhost:8000/api/tasks
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class SubtaskDetailAPIView(APIView): #Access with "http://localhost:8000/api/tasks/{task_id}/subtask/{subtask_id}"
-    
+class SubtaskDetailAPIView(APIView): 
+    """
+    Access with "http://URL_BASE/api/tasks/{task_id}/subtask/{subtask_id}"
+
+    GET request will return only the specific subtask
+    PUT request will update the subtask, allows partial updates
+    DELETE will delete the specific subtask
+    """
     def get_subtask(self, spk):
         try:
             return SubTask.objects.get(pk=spk)
         except SubTask.DoesNotExist:
             return Response({'message': f'Subtask with id {spk} not found'}, status=status.HTTP_404_NOT_FOUND)
         
-    def get(self, request, mpk, spk): # GET request will return only the specific subtask
+    def get(self, request, mpk, spk): 
         try:
             task = Task.objects.get(pk=mpk) # Try to find the task
             subtasks = self.get_subtask(spk)
@@ -136,7 +138,7 @@ class SubtaskDetailAPIView(APIView): #Access with "http://localhost:8000/api/tas
         except Task.DoesNotExist:
             return Response({'message': f'Task with id {mpk} not found'}, status=status.HTTP_404_NOT_FOUND)
         
-    def put(self, request, mpk, spk): # PUT request will update the subtask, allows partial updates
+    def put(self, request, mpk, spk): 
         try:
             task = Task.objects.get(pk=mpk) # Try to find the task
             subtasks = self.get_subtask(spk)
@@ -151,7 +153,7 @@ class SubtaskDetailAPIView(APIView): #Access with "http://localhost:8000/api/tas
         except Task.DoesNotExist:
             return Response({'message': f'Task with id {mpk} not found'}, status=status.HTTP_404_NOT_FOUND)
         
-    def delete(self, request, mpk, spk): # Delete the specific subtask
+    def delete(self, request, mpk, spk): 
         try:
             task = Task.objects.get(pk=mpk) # Try to find the task
             subtasks = self.get_subtask(spk)
